@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Score Préci</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Le jeu des buteurs au but près : atteins un nombre de buts pile avec N joueurs d'un championnat.">
+<meta name="theme-color" content="#2a6639">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Big+Shoulders:opsz,wght@10..72,600..900&family=Big+Shoulders+Stencil:opsz,wght@10..72,800..900&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="turf" aria-hidden="true">
+  <svg class="markings" viewBox="0 0 400 820" preserveAspectRatio="xMidYMin slice">
+    <line x1="-40" y1="330" x2="440" y2="330"/>
+    <circle cx="200" cy="330" r="78"/>
+    <circle class="spot" cx="200" cy="330" r="4"/>
+    <rect x="62" y="650" width="276" height="220"/>
+    <rect x="136" y="742" width="128" height="120"/>
+    <path d="M150 650 A 70 70 0 0 1 250 650"/>
+    <circle class="spot" cx="200" cy="702" r="4"/>
+  </svg>
+</div>
+
+<div class="app" id="app">
+
+  <!-- ============================================================ HOME -->
+  <main class="screen" id="screen-home">
+    <div class="topbar">
+      <span class="topbar-meta" id="home-season">Buts en championnat</span>
+      <div class="topbar-actions">
+        <button class="icon-btn" type="button" data-action="rules" aria-label="Règles du jeu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6"/><circle class="dot" cx="12" cy="17" r="1.1"/></svg>
+        </button>
+        <button class="icon-btn" type="button" data-action="sound" aria-label="Couper le son" aria-pressed="true">
+          <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+          <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="board board--hero">
+        <h1 class="sr-only">Score Préci</h1>
+        <div class="flaps flaps--word" id="hero-1" aria-hidden="true"></div>
+        <div class="flaps flaps--word" id="hero-2" aria-hidden="true"></div>
+        <p class="board-caption">Le jeu des buteurs au but près</p>
+      </div>
+    </section>
+
+    <p class="intro">Fixe une cible, choisis ton championnat, puis cite tes buteurs un par un. Chaque nom révèle ses buts dans ce championnat. Termine le plus près possible de la cible.</p>
+
+    <section class="resume" id="resume" hidden>
+      <div>
+        <p class="resume-kicker">Match en cours</p>
+        <p class="resume-text" id="resume-text"></p>
+      </div>
+      <button class="btn btn--chalk" type="button" data-action="resume">Reprendre</button>
+    </section>
+
+    <form class="setup" id="setup" novalidate>
+      <fieldset class="field-group">
+        <legend class="group-label">Championnat</legend>
+        <div class="leagues" id="leagues" role="radiogroup" aria-label="Championnat"></div>
+      </fieldset>
+
+      <fieldset class="field-group">
+        <legend class="group-label">Nombre de joueurs</legend>
+        <div class="counts" id="counts" role="radiogroup" aria-label="Nombre de joueurs"></div>
+      </fieldset>
+
+      <fieldset class="field-group">
+        <legend class="group-label">Cible <span class="group-unit">en buts</span></legend>
+        <div class="target-setter">
+          <button class="step" type="button" id="t-minus" aria-label="Retirer un but">−</button>
+          <div class="target-display">
+            <div class="flaps flaps--num" id="t-flaps" aria-hidden="true"></div>
+            <label class="sr-only" for="t-input">Cible en buts</label>
+            <input class="target-input" id="t-input" type="number" inputmode="numeric" pattern="[0-9]*" min="1">
+          </div>
+          <button class="step" type="button" id="t-plus" aria-label="Ajouter un but">+</button>
+        </div>
+        <div class="target-tools">
+          <button class="btn btn--chalk btn--small" type="button" id="t-draw">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><circle class="dot" cx="9" cy="9" r="1.4"/><circle class="dot" cx="15" cy="15" r="1.4"/><circle class="dot" cx="15" cy="9" r="1.4"/><circle class="dot" cx="9" cy="15" r="1.4"/></svg>
+            Tirage au sort
+          </button>
+          <p class="target-hint" id="t-hint"></p>
+        </div>
+      </fieldset>
+
+      <button class="cta" type="submit" id="kickoff">Coup d'envoi</button>
+    </form>
+
+    <section class="ticket" id="daily" aria-labelledby="daily-title">
+      <div class="ticket-stub">
+        <span class="ticket-kicker">Défi</span>
+        <span class="ticket-day" id="daily-day"></span>
+        <span class="ticket-month" id="daily-month"></span>
+      </div>
+      <div class="ticket-body">
+        <h2 class="ticket-title" id="daily-title">Défi du jour</h2>
+        <p class="ticket-line" id="daily-line"></p>
+        <p class="ticket-status" id="daily-status"></p>
+        <button class="btn btn--ink btn--small" type="button" data-action="daily" id="daily-btn">Jouer le défi</button>
+      </div>
+    </section>
+
+    <p class="stats" id="stats"></p>
+
+    <footer class="foot">
+      <p id="foot-sources"></p>
+    </footer>
+  </main>
+
+  <!-- ============================================================ GAME -->
+  <main class="screen" id="screen-game" hidden>
+    <div class="topbar">
+      <button class="icon-btn icon-btn--text" type="button" data-action="menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg>
+        Menu
+      </button>
+      <span class="topbar-meta" id="g-mode"></span>
+      <div class="topbar-actions">
+        <button class="icon-btn" type="button" data-action="sound" aria-label="Couper le son" aria-pressed="true">
+          <svg class="snd-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+          <svg class="snd-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="lamps lamps--small" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <section class="board board--game" id="board" aria-label="Tableau d'affichage">
+      <div class="board-head">
+        <span class="board-plate" id="g-league"></span>
+        <span class="board-progress" id="g-progress"></span>
+      </div>
+      <div class="counters">
+        <div class="counter counter--target">
+          <span class="counter-label">Cible</span>
+          <div class="flaps flaps--num" id="f-target"></div>
+        </div>
+        <div class="counter">
+          <span class="counter-label">Total</span>
+          <div class="flaps flaps--num" id="f-total"></div>
+        </div>
+        <div class="counter counter--rest" id="c-rest">
+          <span class="counter-label" id="rest-label">Reste</span>
+          <div class="flaps flaps--num" id="f-rest"></div>
+        </div>
+      </div>
+      <div class="gauge" id="gauge" aria-hidden="true">
+        <div class="gauge-track">
+          <span class="gauge-fill"></span>
+          <span class="gauge-over"></span>
+          <span class="gauge-mark"></span>
+        </div>
+      </div>
+      <p class="sr-only" id="board-live" aria-live="polite"></p>
+    </section>
+
+    <section class="pick" id="pick">
+      <div class="pick-head">
+        <label class="pick-label" for="q" id="pick-label">Joueur nº 1</label>
+        <span class="pick-count" id="pick-count"></span>
+      </div>
+      <div class="field">
+        <input id="q" type="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Tape un nom de buteur" role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list">
+        <button class="field-clear" id="q-clear" type="button" aria-label="Effacer" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+        </button>
+        <ul class="suggest" id="suggest" role="listbox" aria-label="Buteurs" hidden></ul>
+      </div>
+      <p class="scope" id="scope"></p>
+    </section>
+
+    <section class="sheet" id="sheet" aria-label="Feuille de match">
+      <header class="sheet-head">
+        <p class="sheet-title">Feuille de match</p>
+        <dl class="sheet-fields">
+          <div><dt>Compétition</dt><dd id="sh-league"></dd></div>
+          <div><dt>Objectif</dt><dd id="sh-target"></dd></div>
+          <div><dt>Date</dt><dd id="sh-date"></dd></div>
+        </dl>
+      </header>
+      <table class="sheet-table">
+        <thead><tr><th scope="col">Nº</th><th scope="col">Buteur</th><th scope="col">Buts</th></tr></thead>
+        <tbody id="sh-lines"></tbody>
+        <tfoot><tr><td></td><th scope="row">Total</th><td id="sh-total">0</td></tr></tfoot>
+      </table>
+      <div class="verdict-stamp" id="sh-verdict" hidden></div>
+    </section>
+
+    <div class="result-spacer" id="result-spacer" hidden></div>
+  </main>
+
+  <!-- ============================================================ RESULT -->
+  <section class="result" id="result" role="region" aria-label="Résultat" hidden>
+    <p class="result-kicker">Coup de sifflet final</p>
+    <h2 class="result-title" id="r-title"></h2>
+    <p class="result-sub" id="r-sub"></p>
+    <details class="result-solution" id="r-solution">
+      <summary>Analyse du match</summary>
+      <p class="result-hint" id="r-hint"></p>
+      <p class="result-combo-label" id="r-combo-label"></p>
+      <p class="result-combo" id="r-combo"></p>
+    </details>
+    <div class="result-actions">
+      <button class="cta cta--small" type="button" data-action="again">Rejouer</button>
+      <button class="btn btn--chalk" type="button" data-action="share">Partager</button>
+      <button class="btn btn--chalk" type="button" data-action="menu">Menu</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ RULES -->
+  <div class="overlay" id="rules" hidden>
+    <section class="rules" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+      <h2 class="rules-title" id="rules-title">Règles du jeu</h2>
+      <ol class="rules-list">
+        <li>Choisis un championnat, un nombre de joueurs et une cible en buts. Le tirage au sort garantit qu'une combinaison parfaite existe.</li>
+        <li>Cite un buteur. Ses buts dans ce championnat, toutes saisons confondues, s'affichent aussitôt sur le tableau.</li>
+        <li>Adapte ton prochain choix au reste à marquer. Un joueur ne peut être cité qu'une fois.</li>
+        <li>Après le dernier joueur, l'écart avec la cible donne ton verdict, de « Lucarne » (écart nul) à « En tribune ».</li>
+      </ol>
+      <p class="rules-note">Seuls les buts en championnat comptent : pas de coupes, pas de sélections. Les totaux des joueurs en activité évoluent chaque week-end.</p>
+      <button class="cta cta--small" type="button" data-action="close-rules">C'est parti</button>
+    </section>
+  </div>
+
+  <div class="share-box" id="share-box" hidden>
+    <label for="share-text">Copie ton résultat</label>
+    <textarea id="share-text" rows="5" readonly></textarea>
+    <button class="btn btn--ink btn--small" type="button" data-action="close-share">Fermer</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+<noscript><p class="noscript">Score Préci a besoin de JavaScript pour jouer.</p></noscript>
+<script src="assets/players.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

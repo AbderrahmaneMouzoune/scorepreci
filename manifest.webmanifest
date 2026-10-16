@@ -1,0 +1,11 @@
+{
+  "name": "Score Préci",
+  "short_name": "Score Préci",
+  "description": "Le jeu des buteurs au but près.",
+  "lang": "fr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#29653a",
+  "theme_color": "#29653a",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
